@@ -10,3 +10,15 @@
     import 'relative/path/to/stylesheet.scss';
 
 */
+.button {
+    opacity: 0;
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+}
+.button:hover{
+    opacity: 1;
+    border: 0;
+    background-color: white;
+}
+
