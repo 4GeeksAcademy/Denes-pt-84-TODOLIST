@@ -6,49 +6,60 @@ import rigoImage from "../../img/rigo-baby.jpg";
 //create your first component
 const Home = () => {
 	const [inputValue, setInputValue] = useState(""); /*guarda información para luego modificar el estado original*/
-	const [tarea, setTarea] = useState([]);
+	const [tareas, setTareas] = useState([]);// los set sobreescriben, no vacian 
 
-	const addTask = (tareaFinal) => {    /*función que se encarga de agregar nuevas tareas a la lista*/
-		setTarea([...tarea, tareaFinal])
+	const addTask = (tareasFinal) => {    /*función que se encarga de agregar nuevas tareass a la lista*/
+		setTareas([...tareas, tareasFinal])
 		setInputValue("") /*convierte un estado en vacio una vez modificado*/
 	}
 
-	const manejarTecla = (event) => {  /*función para si el usuario pulsa enter, la otra funcion addtask sume una tarea a la lista*/
+	const manejarTecla = (event) => {  /*función para si el usuario pulsa enter, la otra funcion addtask sume una tareas a la lista*/
 		if (event.key === "Enter") {
 			creaTodo(inputValue)
 		}
 
 	}
-	// const eliminarTarea = (index) => {
-	// 	const nuevaLista = [...tarea];
-	// 	nuevaLista.splice(index, 1);
-	// 	setTarea(nuevaLista);
-	// }
 
-
-
-	const traerTarea = () => {
-		fetch("https://playground.4geeks.com/todo/users/Denesjakab")
+	const CrearUsuario = () => {
+		fetch("https://playground.4geeks.com/todo/users/Denesjakab",
+			{ method: "POST" }
+		)
 			.then((response) => {
 				console.log(response)
 				return response.json()
+				
 			})
-			.then((data) =>
+			.then((result) => console.log(result))
+			.catch((err) => console.error(err));
+	}
 
-				setTarea(data.todos)
-			)
+	const traerTareas = () => {
+		fetch("https://playground.4geeks.com/todo/users/Denesjakab")
+			.then((response) => { //crear condicion que si la respuesta no es correcta, llamar a la funcion crear usuario, si es correcta return respuesta.json
+				if (!response.ok) {
+					CrearUsuario()
+				}
+				else {
+					return (response.json())
+				}
+			})
+			.then((data)=>{
+				console.log(data.todos)
+				setTareas(data.todos)//dentro del parentesis es el nuevo valor que va a tener
+			})
+
 			.catch((err) => { err })
 
 	}
 
-	const eliminarTarea = (id) => {
+	const eliminarTareas = (id) => {
 		fetch(`https://playground.4geeks.com/todo/todos/${id}`,  //la url que sea modificable
 			{ method: "DELETE" }
 
 		)
 			.then((response) => {
 				console.log(response)
-				traerTarea()
+				traerTareas()
 			})
 			.catch((err) => { err })
 
@@ -56,27 +67,27 @@ const Home = () => {
 
 	const creaTodo = async () => {
 		const dataToSend = {
-				"label": inputValue,
-				"is_done": false
+			"label": inputValue,
+			"is_done": false
 		}
-		const nuevaTarea = [...tarea, dataToSend];
+		const nuevasTareas = [...tareas, dataToSend];
 		const response = await fetch('https://playground.4geeks.com/todo/todos/Denesjakab', {
 			method: 'POST',
-			body: JSON.stringify(dataToSend), 
+			body: JSON.stringify(dataToSend),
 			headers: {
-			   'Content-Type': 'application/json'
+				'Content-Type': 'application/json'
 			}
 		});
 		if (response.ok) {
 			const data = await response.json();
-			setTarea(nuevaTarea);
-			traerTarea();
+			setTareas(nuevasTareas);
+			traerTareas();
 			return data;
 
 		} else {
 			console.log('error: ', response.status, response.statusText);
 			/* Realiaza el tratamiento del error que devolvió el request HTTP */
-			return {error: {status: response.status, statusText: response.statusText}};
+			return { error: { status: response.status, statusText: response.statusText } };
 		};
 
 
@@ -84,20 +95,20 @@ const Home = () => {
 
 
 	useEffect(() => {
-		traerTarea()
+		traerTareas()
 	}, [])
 
 
-	const tareaList = tarea.map((cosas, index) => (<li key={index}
+	const tareasList = tareas.map((cosas, index) => (<li key={index}
 		className="list-group-item">{cosas.label}
 		<button
-			onClick={() => eliminarTarea(cosas.id)}
+			onClick={() => eliminarTareas(cosas.id)}
 			className="button">X</button></li>))
 
 
 	return (
 		<div className="text-center container">
-			<h1 className="text-center mt-5">Tareas por hacer:</h1>
+			<h1 className="text-center mt-5">tareass por hacer:</h1>
 
 			<input className="form-control"
 				placeholder="EJ: lavar la ropa"
@@ -108,10 +119,10 @@ const Home = () => {
 				}}
 			/>
 			<ul className="list-group">
-				{tarea.length === 0 ? (<p className="text-muted">No hay tareas pendientes.</p>)
+				{tareas.length === 0 ? (<p className="text-muted">No hay tareass pendientes.</p>)
 					:
 					(
-						tareaList
+						tareasList
 					)}
 			</ul>
 		</div>
