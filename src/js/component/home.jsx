@@ -16,6 +16,7 @@ const Home = () => {
 	const manejarTecla = (event) => {  /*función para si el usuario pulsa enter, la otra funcion addtask sume una tareas a la lista*/
 		if (event.key === "Enter") {
 			creaTodo(inputValue)
+			setInputValue("")
 		}
 
 	}
